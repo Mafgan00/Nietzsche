@@ -1,35 +1,38 @@
 package com.example.demo;
 
 import java.io.BufferedReader;
-import java.io.IOException;
-import java.io.InputStream;
+import java.io.BufferedWriter;
 import java.io.InputStreamReader;
+import java.io.OutputStreamWriter;
 
-public class CompileAndRun {
-  public static void main(String[] args) {
-    //if (args.length != 1) {
-    //  System.out.println("エラー：ファイル名を指定してください。");
-    //  return;
-    //}
-    String fileName = "Hello.java";
-    try {
-      ProcessBuilder pb = new ProcessBuilder("javac", fileName);
-      Process proc = pb.start(); //コンパイル実行
-      proc.waitFor();
+public class CompileAndRun{
+	public static void main(String[] args){
+		try{
 
-      pb = new ProcessBuilder("java", fileName.replace(".java", ""));
-      proc = pb.start(); //実行
-      InputStream is = proc.getInputStream();
-      InputStreamReader isr = new InputStreamReader(is);
-      BufferedReader br = new BufferedReader(isr);
+			ProcessBuilder pb = new ProcessBuilder("javac", "Main.java");
+			Process p = pb.start();
+			p.waitFor();
 
-      String line;
-      while ((line = br.readLine()) != null) { //実行結果を標準出力
-        System.out.println(line);
-      }
-
-    } catch (IOException | InterruptedException e) {
-      e.printStackTrace();
-    }
-  }
+			pb = new ProcessBuilder("java", "Main");
+			p = pb.start();
+			
+			//テストケース入力
+			BufferedWriter bw = new BufferedWriter(new OutputStreamWriter(p.getOutputStream()));
+			bw.write("10\n");
+			bw.write("in that case you should print yes and not no\n");
+			bw.close();
+			
+			//出力確認
+			BufferedReader br = new BufferedReader(new InputStreamReader(p.getInputStream()));
+			String line = br.readLine();
+			if("Yes".equals(line)){
+				System.out.println("Test passed");
+			}else{
+				System.out.println("Test failed");
+			}
+			
+		}catch(Exception e){
+			e.printStackTrace();
+		}
+	}
 }
