@@ -8,6 +8,8 @@ public class NietzscheApplication {
 
 	public static void main(String[] args) {
 		SpringApplication.run(NietzscheApplication.class, args);
+		
+		
 	}
 
 }
