@@ -1,31 +1,5 @@
-<!DOCTYPE html>
-<html>
-<head>
-  <meta charset="utf-8">
-  <title>問題提出ページ</title>
-  <script src="https://cdn.jsdelivr.net/npm/vue/dist/vue.js"></script>
-  <style>
-    body {
-      font-family: sans-serif;
-    }
-    #app {
-      width: 500px;
-      margin: 0 auto;
-    }
-    h1 {
-      margin-bottom: 1rem;
-    }
-    label {
-      font-weight: bold;
-      margin-right: 0.5rem;
-    }
-    input {
-      margin-bottom: 0.5rem;
-    }
-  </style>
-</head>
-<body>
-  <div id="app">
+<template>
+  <div>
     <h1>問題提出</h1>
     <form>
       <div>
@@ -51,54 +25,75 @@
       </div>
     </form>
   </div>
-  <script>
-    new Vue({
-      el: '#app',
-      data: {
-        title: '',
-        inputFiles: [],
-        outputFiles: [],
-        answerFile: null
-      },
-      methods: {
-        // 入力ファイルが変更された際に呼ばれる
-        onInputChanged(e) {
-          this.inputFiles = e.target.files;
-        },
-        // 出力ファイルが変更された際に呼ばれる
-        onOutputChanged(e) {
-          this.outputFiles = e.target.files;
-        },
-        // 解答ファイルが変更された際に呼ばれる
-        onAnswerChanged(e) {
-          this.answerFile = e.target.files[0];
-        },
-        // 送信ボタンがクリックされた際に呼ばれる
-        onSubmit() {
-          // 入力されたデータをサーバーにPOSTする
-          const formData = new FormData();
-          formData.append('title', this.title);
-          for (let i = 0; i < this.inputFiles.length; i++) {
-            formData.append('inputFiles', this.inputFiles[i]);
-          }
-          for (let i = 0; i < this.outputFiles.length; i++) {
-            formData.append('outputFiles', this.outputFiles[i]);
-          }
-          formData.append('answerFile', this.answerFile);
-          fetch('/post', {
-            method: 'POST',
-            body: formData
-          })
-            .then(response => response.json())
-            .then(data => {
-              // 送信が成功した場合の処理
-            })
-            .catch(error => {
-              // 送信が失敗した場合の処理
-            });
-        }
+</template>
+
+<script>
+export default {
+  data() {
+    return {
+      title: '',
+      inputFiles: [],
+      outputFiles: [],
+      answerFile: null
+    };
+  },
+  methods: {
+    // 入力ファイルが変更された際に呼ばれる
+    onInputChanged(e) {
+      this.inputFiles = e.target.files;
+    },
+    // 出力ファイルが変更された際に呼ばれる
+    onOutputChanged(e) {
+      this.outputFiles = e.target.files;
+    },
+    // 解答ファイルが変更された際に呼ばれる
+    onAnswerChanged(e) {
+      this.answerFile = e.target.files[0];
+    },
+    // 送信ボタンがクリックされた際に呼ばれる
+    onSubmit() {
+      // 入力されたデータをサーバーにPOSTする
+      const formData = new FormData();
+      formData.append('title', this.title);
+      for (let i = 0; i < this.inputFiles.length; i++) {
+        formData.append('inputFiles', this.inputFiles[i]);
       }
-    });
-  </script>
-</body>
-</html>
+      for (let i = 0; i < this.outputFiles.length; i++) {
+        formData.append('outputFiles', this.outputFiles[i]);
+      }
+      formData.append('answerFile', this.answerFile);
+      fetch('/post', {
+        method: 'POST',
+        body: formData
+      })
+        .then(response => response.json())
+        .then(data => {
+          // 送信が成功した場合の処理
+        })
+        .catch(error => {
+          // 送信が失敗した場合の処理
+        });
+    }
+  }
+};
+</script>
+
+<style scoped>
+body {
+  font-family: sans-serif;
+}
+#app {
+  width: 500px;
+  margin: 0 auto;
+}
+h1 {
+  margin-bottom: 1rem;
+}
+label {
+  font-weight: bold;
+  margin-right: 0.5rem;
+}
+input {
+  margin-bottom: 0.5rem;
+}
+</style>
