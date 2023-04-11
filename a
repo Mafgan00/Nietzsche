@@ -1,99 +1,104 @@
-・Vue
-
-<template>
-  <div>
-    <h1>File Upload</h1>
-    <p>Please select files you want to upload.</p>
-    <input type="file" name="files" multiple v-on:change="selectFiles">
-    <div>
-      <ul>
-        <li v-for="file in selectedFiles">
-          {{ file.name }}
-        </li>
-      </ul>
-    </div>
-    <button v-on:click="submitFiles">Submit</button>
-  </div>
-</template>
-
-<script>
-export default {
-  data() {
-    return {
-      selectedFiles: []
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8">
+  <title>問題提出ページ</title>
+  <script src="https://cdn.jsdelivr.net/npm/vue/dist/vue.js"></script>
+  <style>
+    body {
+      font-family: sans-serif;
     }
-  },
-  methods: {
-    selectFiles(event) {
-      this.selectedFiles = event.target.files;
-    },
-    submitFiles() {
-      const formData = new FormData();
-      for (let i = 0; i < this.selectedFiles.length; i++) {
-        formData.append('files', this.selectedFiles[i]);
+    #app {
+      width: 500px;
+      margin: 0 auto;
+    }
+    h1 {
+      margin-bottom: 1rem;
+    }
+    label {
+      font-weight: bold;
+      margin-right: 0.5rem;
+    }
+    input {
+      margin-bottom: 0.5rem;
+    }
+  </style>
+</head>
+<body>
+  <div id="app">
+    <h1>問題提出</h1>
+    <form>
+      <div>
+        <label for="title">問題名：</label>
+        <input type="text" v-model="title">
+      </div>
+      <div>
+        <div>
+          <label for="input">テストケースの入力ファイル：</label>
+          <input type="file" multiple @change="onInputChanged">
+        </div>
+        <div>
+          <label for="output">テストケースの出力ファイル：</label>
+          <input type="file" multiple @change="onOutputChanged">
+        </div>
+      </div>
+      <div>
+        <label for="answer">問題の解答ファイル：</label>
+        <input type="file" @change="onAnswerChanged">
+      </div>
+      <div>
+        <input type="submit" value="送信" @click.prevent="onSubmit">
+      </div>
+    </form>
+  </div>
+  <script>
+    new Vue({
+      el: '#app',
+      data: {
+        title: '',
+        inputFiles: [],
+        outputFiles: [],
+        answerFile: null
+      },
+      methods: {
+        // 入力ファイルが変更された際に呼ばれる
+        onInputChanged(e) {
+          this.inputFiles = e.target.files;
+        },
+        // 出力ファイルが変更された際に呼ばれる
+        onOutputChanged(e) {
+          this.outputFiles = e.target.files;
+        },
+        // 解答ファイルが変更された際に呼ばれる
+        onAnswerChanged(e) {
+          this.answerFile = e.target.files[0];
+        },
+        // 送信ボタンがクリックされた際に呼ばれる
+        onSubmit() {
+          // 入力されたデータをサーバーにPOSTする
+          const formData = new FormData();
+          formData.append('title', this.title);
+          for (let i = 0; i < this.inputFiles.length; i++) {
+            formData.append('inputFiles', this.inputFiles[i]);
+          }
+          for (let i = 0; i < this.outputFiles.length; i++) {
+            formData.append('outputFiles', this.outputFiles[i]);
+          }
+          formData.append('answerFile', this.answerFile);
+          fetch('/post', {
+            method: 'POST',
+            body: formData
+          })
+            .then(response => response.json())
+            .then(data => {
+              // 送信が成功した場合の処理
+            })
+            .catch(error => {
+              // 送信が失敗した場合の処理
+            });
+        }
       }
-      fetch('/upload', {
-        method: 'POST',
-        body: formData
-      });
-    }
-  }
-}
-</script>
-
-・HTML
-
-<div>
-  <h1>File Upload</h1>
-  <p>Please select files you want to upload.</p>
-  <input type="file" name="files" multiple />
-  <div>
-    <ul>
-      <li>
-      </li>
-    </ul>
-  </div>
-  <button>Submit</button>
-</div>
-
-
-・CSS
-
-h1 {
-  font-size: 20px;
-  font-weight: bold;
-  color: #222222;
-  margin-bottom: 10px;
-}
-p {
-  font-size: 14px;
-  color: #999999;
-  margin-bottom: 20px;
-}
-input[type="file"] {
-  width: 300px;
-  padding: 10px;
-  border: 1px solid #cccccc;
-  border-radius: 5px;
-  margin-bottom: 20px;
-}
-ul {
-  list-style: none;
-  padding: 0;
-  margin: 0;
-}
-li {
-  font-size: 14px;
-  color: #666666;
-  margin-bottom: 5px;
-}
-button {
-  width: 100px;
-  padding: 10px;
-  border: none;
-  border-radius: 5px;
-  background-color: #1e90ff;
-  font-size: 14px;
-  font-weight: bold;
-  color: #ffffff;
-}
+    });
+  </script>
+</body>
+</html>
