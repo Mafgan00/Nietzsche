@@ -1,99 +1,75 @@
+
 <template>
-  <div>
-    <h1>問題提出</h1>
-    <form>
-      <div>
-        <label for="title">問題名：</label>
-        <input type="text" v-model="title">
-      </div>
-      <div>
-        <div>
-          <label for="input">テストケースの入力ファイル：</label>
-          <input type="file" multiple @change="onInputChanged">
+  <div class="container">
+    <div class="title">
+      <h1>問題提出画面</h1>
+    </div>
+    <div class="form">
+      <form>
+        <div class="form_item">
+          <label>問題名</label>
+          <input type="text" name="name">
         </div>
-        <div>
-          <label for="output">テストケースの出力ファイル：</label>
-          <input type="file" multiple @change="onOutputChanged">
+        <div class="form_item">
+          <label>テストケース入力ファイル</label>
+          <input type="file" name="test_input">
         </div>
-      </div>
-      <div>
-        <label for="answer">問題の解答ファイル：</label>
-        <input type="file" @change="onAnswerChanged">
-      </div>
-      <div>
-        <input type="submit" value="送信" @click.prevent="onSubmit">
-      </div>
-    </form>
+        <div class="form_item">
+          <label>テストケース出力ファイル</label>
+          <input type="file" name="test_output">
+        </div>
+        <div class="form_item">
+          <label>問題の解答ファイル</label>
+          <input type="file" name="answer">
+        </div>
+        <div class="button">
+          <button type="submit">提出</button>
+          <button type="button" @click="goBack">ホームに戻る</button>
+        </div>
+      </form>
+    </div>
   </div>
 </template>
 
 <script>
 export default {
-  data() {
-    return {
-      title: '',
-      inputFiles: [],
-      outputFiles: [],
-      answerFile: null
-    };
-  },
   methods: {
-    // 入力ファイルが変更された際に呼ばれる
-    onInputChanged(e) {
-      this.inputFiles = e.target.files;
-    },
-    // 出力ファイルが変更された際に呼ばれる
-    onOutputChanged(e) {
-      this.outputFiles = e.target.files;
-    },
-    // 解答ファイルが変更された際に呼ばれる
-    onAnswerChanged(e) {
-      this.answerFile = e.target.files[0];
-    },
-    // 送信ボタンがクリックされた際に呼ばれる
-    onSubmit() {
-      // 入力されたデータをサーバーにPOSTする
-      const formData = new FormData();
-      formData.append('title', this.title);
-      for (let i = 0; i < this.inputFiles.length; i++) {
-        formData.append('inputFiles', this.inputFiles[i]);
-      }
-      for (let i = 0; i < this.outputFiles.length; i++) {
-        formData.append('outputFiles', this.outputFiles[i]);
-      }
-      formData.append('answerFile', this.answerFile);
-      fetch('/post', {
-        method: 'POST',
-        body: formData
-      })
-        .then(response => response.json())
-        .then(data => {
-          // 送信が成功した場合の処理
-        })
-        .catch(error => {
-          // 送信が失敗した場合の処理
-        });
+    goBack() {
+      this.$router.push('/home');
     }
   }
-};
+}
 </script>
 
-<style scoped>
-body {
-  font-family: sans-serif;
-}
-#app {
-  width: 500px;
+<style>
+.container {
+  width: 800px;
   margin: 0 auto;
 }
-h1 {
+.title {
+  text-align: center;
+}
+.form {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+}
+.form_item {
   margin-bottom: 1rem;
 }
-label {
-  font-weight: bold;
-  margin-right: 0.5rem;
+.button {
+  display: flex;
+  justify-content: center;
+  margin-top: 1rem;
 }
-input {
-  margin-bottom: 0.5rem;
+button {
+  padding: 0.5rem 1rem;
+  border: none;
+  background-color: #00f;
+  color: #fff;
+  font-size: 1rem;
+  font-weight: bold;
+  text-transform: uppercase;
+  cursor: pointer;
 }
 </style>
